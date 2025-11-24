@@ -1,87 +1,215 @@
 {% extends "base.html" %}
-
 {% block title %}Patient Dashboard{% endblock %}
-
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Patient Dashboard</h1>
-</div>
-<h4 class="mb-4 fw-normal">Welcome, {{ current_user.name }}</h4>
 
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Upcoming Appointments</h5>
-            </div>
-            {% if upcoming_appts %}
-            <div class="list-group list-group-flush">
-                {% for appt in upcoming_appts %}
-                <div class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">Dr. {{ appt.doctor.user.name }}</h5>
-                        <small class="text-muted">{{ appt.status }}</small>
-                    </div>
-                    <p class="mb-1">{{ appt.doctor.department.name }}</p>
-                    <p class="mb-0"><strong>{{ appt.appointment_date.strftime('%A, %B %d, %Y') }}</strong> at <strong>{{ appt.appointment_time.strftime('%I:%M %p') }}</strong></p>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="card-body text-center">
-                <p class="text-muted m-0">You have no upcoming appointments.</p>
-            </div>
-            {% endif %}
-        </div>
+<div class="dash-container py-4" style="max-width: 98%; margin: auto; padding-left: 25px; padding-right: 25px">
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Past Appointments</h5>
-            </div>
-            {% if past_appts %}
-            <div class="list-group list-group-flush">
-                {% for appt in past_appts %}
-                <div class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">Dr. {{ appt.doctor.user.name }}</h5>
-                        <small class="text-muted">{{ appt.appointment_date.strftime('%Y-%m-%d') }}</small>
-                    </div>
-                    <p class="mb-1">Status: <span class="fw-bold">{{ appt.status }}</span></p>
-                    {% if appt.status == 'Completed' and appt.treatment %}
-                        <a href="{{ url_for('patient_view_treatment', appointment_id=appt.id) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-file-earmark-medical"></i> View Treatment Details
-                        </a>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="card-body text-center">
-                <p class="text-muted m-0">You have no past appointments.</p>
-            </div>
-            {% endif %}
-        </div>
+  <!-- Title -->
+  <h1 style="font-size: 42px; font-weight: 800; color: #3756d8; margin-bottom: 5px; letter-spacing: -1px;">
+    Patient Dashboard
+  </h1>
+
+  <p style="font-size: 20px; color: #6b7280; margin-bottom: 25px; font-weight: 500;">
+    Welcome, <strong>{{ current_user.name }}</strong> 👋
+  </p>
+
+<!-- UPCOMING APPOINTMENTS -->
+<div style="border-radius: 14px; border: 1px solid #e3e7ee; margin-bottom: 20px; padding: 5px; background: #f9fafb; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+  <div class="card-body">
+
+    <table class="table mb-3" style="background: #e7fff3;">
+      <tr style="background: #e7fff3; font-weight: 700;">
+        <td colspan="5" style="color: #267c5a; font-size: 18px;">📅 Upcoming Appointments</td>
+      </tr>
+    </table>
+
+    {% if upcoming_appts %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle" style="width: 100%;">
+
+        <thead>
+          <tr>
+            <th style="padding: 14px 18px; background: #dbeafe; color: #1e3a8a;">Doctor</th>
+            <th style="padding: 14px 18px; background: #e0f2fe; color: #0369a1;">Department</th>
+            <th style="padding: 14px 18px; background: #fef9c3; color: #854d0e;">Date</th>
+            <th style="padding: 14px 18px; background: #fce7f3; color: #9d174d;">Time</th>
+            <th style="padding: 14px 18px; background: #ede9fe; color: #5b21b6;">Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for appt in upcoming_appts %}
+          <tr>
+
+            <!-- Doctor -->
+            <td style="padding: 14px 18px; background:#dbeafe;">
+              <strong>Dr. {{ appt.doctor.user.name }}</strong>
+            </td>
+
+            <!-- Department -->
+            <td style="padding: 14px 18px; background:#e0f2fe;">
+              {{ appt.doctor.department.name }}
+            </td>
+
+            <!-- Date -->
+            <td style="padding: 14px 18px; background:#fef9c3;">
+              {{ appt.appointment_date.strftime('%d %b %Y') }}
+            </td>
+
+            <!-- Time -->
+            <td style="padding: 14px 18px; background:#fce7f3;">
+              {{ appt.appointment_time.strftime('%I:%M %p') }}
+            </td>
+
+            <!-- Status -->
+            <td style="padding: 14px 18px; background:#ede9fe;">
+              <span class="badge text-dark
+                {% if appt.status == 'Pending' %} bg-warning text-dark
+                {% elif appt.status == 'Confirmed' %} bg-success 
+                {% elif appt.status == 'Cancelled' %} bg-danger
+                {% endif %}">
+                {{ appt.status }}
+              </span>
+            </td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card sticky-top" style="top: 80px;">
-            <div class="card-header">
-                <h5 class="mb-0">Book a New Appointment</h5>
-            </div>
-            <div class="card-body">
-                <p>Select a department to find a doctor.</p>
-                <div class="list-group">
-                    <a href="{{ url_for('patient_view_doctors') }}" class="list-group-item list-group-item-action">
-                        <strong>View All Doctors</strong>
-                    </a>
-                    {% for dept in departments %}
-                    <a href="{{ url_for('patient_view_doctors', dept_id=dept.id) }}" class="list-group-item list-group-item-action">
-                        {{ dept.name }}
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% else %}
+    <p class="text-muted">No upcoming appointments.</p>
+    {% endif %}
+  </div>
 </div>
+
+
+  <!-- PAST APPOINTMENTS -->
+  <div style="border-radius: 14px; border: 1px solid #e3e7ee; margin-bottom: 28px; padding: 5px; background: #f9fafb; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <div class="card-body">
+
+      <table class="table mb-3" style="background: #fff0f0;">
+        <tr style="background: #fff0f0; font-weight: 700;">
+          <td colspan="5" style="color: #b91c1c; font-size: 18px;">📘 Past Appointments</td>
+        </tr>
+      </table>
+
+      {% if past_appts %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" style="width: 100%;">
+
+          <thead>
+            <tr>
+              <th style="padding: 14px 18px; background: #dbeafe; color: #1e3a8a;">Doctor</th>
+              <th style="padding: 14px 18px; background: #e0f2fe; color: #0369a1;">Department</th>
+              <th style="padding: 14px 18px; background: #fef9c3; color: #854d0e;">Date</th>
+              <th style="padding: 14px 18px; background: #fce7f3; color: #9d174d;">Status</th>
+              <th style="padding: 14px 18px; background: #ede9fe; color: #5b21b6;">Report</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for appt in past_appts %}
+            <tr style="background:{% if loop.index is even %}#f0f4ff{% else %}#f7faff{% endif %};">
+              <td style="padding: 14px 18px;">Dr. {{ appt.doctor.user.name }}</td>
+              <td style="padding: 14px 18px;">{{ appt.doctor.department.name }}</td>
+              <td style="padding: 14px 18px;">{{ appt.appointment_date.strftime('%d %b %Y') }}</td>
+              <td style="padding: 14px 18px;">
+                <span class="badge {% if appt.status == 'Completed' %} bg-success {% elif appt.status == 'Cancelled' %} bg-danger {% else %} bg-secondary {% endif %}">
+                  {{ appt.status }}
+                </span>
+              </td>
+              <td style="padding: 14px 18px;">
+                {% if appt.status == 'Completed' and appt.treatment %}
+                <a href="{{ url_for('patient_view_treatment', appointment_id=appt.id) }}" class="btn btn-sm btn-primary">View Report</a>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+
+      {% else %}
+      <p class="text-muted">No past appointment history.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- BOOK APPOINTMENT -->
+  <div style="border-radius: 14px; border: 1px solid #e3e7ee; margin-bottom: 28px; padding: 9px; background: #f9fafb; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <div class="card-body">
+
+      <table class="table mb-3" style="background: #e8f3ff;">
+        <tr style="background: #e8f3ff; font-weight: 700;">
+          <td colspan="3" style="color: #1d4ed8; font-size: 18px;">🩺 Book a New Appointment</td>
+        </tr>
+      </table>
+
+      <p class="text-muted text-md py-2">Choose a department:</p>
+
+      <div class="row g-3">
+
+        <!-- View All Doctors -->
+        <div class="col-md-4">
+          <a href="{{ url_for('patient_view_doctors') }}" style="
+            display: flex; align-items: center; gap: 10px;
+            padding: 18px; border-radius: 12px;
+            background: #28a745; color: white;
+            text-decoration: none; font-weight: 600;
+            justify-content: center;">
+            🔍 View All Doctors
+          </a>
+        </div>
+
+        {% for dept in departments %}
+
+        {% set icon =
+          '🫀' if 'cardio' in dept.name|lower else
+          '🧠' if 'neuro' in dept.name|lower else
+          '🦴' if 'ortho' in dept.name|lower else
+          '👁️' if 'ophthal' in dept.name|lower else
+          '🦷' if 'dental' in dept.name|lower else
+          '👶' if 'pedi' in dept.name|lower else
+          '🩺'
+        %}
+
+        {% set bg =
+          '#ffe8e8' if 'cardio' in dept.name|lower else
+          '#f3e8ff' if 'neuro' in dept.name|lower else
+          '#fff3e0' if 'ortho' in dept.name|lower else
+          '#e8f2ff' if 'ophthal' in dept.name|lower else
+          '#eafff7' if 'dental' in dept.name|lower else
+          '#fff7e6' if 'pedi' in dept.name|lower else
+          '#eef1ff'
+        %}
+
+        <div class="col-md-4">
+          <a href="{{ url_for('patient_view_doctors', dept_id=dept.id) }}" style="
+            display:flex; align-items:center; gap:10px;
+            padding:15px; border-radius:12px;
+            background: {{ bg }};
+            border:1px solid #dce1eb;
+            color:#333; font-weight:600;
+            text-decoration:none; justify-content:center;"
+            onmouseover="this.style.transform='scale(1.03)'"
+            onmouseout="this.style.transform='scale(1)'">
+            <span style="font-size:22px;">{{ icon }}</span> {{ dept.name }}
+          </a>
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}

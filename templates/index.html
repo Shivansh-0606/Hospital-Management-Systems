@@ -1,26 +1,99 @@
 {% extends "base.html" %}
 
 {% block title %}Welcome{% endblock %}
+{% block extra_styles %}
+<style>
+    main {
+        padding-top: 0 !important;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-    <div class="p-5 mb-4 bg-light rounded-3 text-center">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">Welcome to the Hospital Management System</h1>
-            <p class="fs-4 col-md-10 mx-auto">
-                Your one-stop solution for managing patient, doctor, and appointment data efficiently.
+<div class="relative overflow-hidden flex items-center bg-cover bg-center text-white  pb-40" 
+     style="background-image: linear-gradient(to right, rgba(29, 78, 216, 0.7), rgba(0, 0, 0, 0.3)), url('https://via.placeholder.com/1920x1080/0d47a1/ffffff?text=Medical+Background');">
+    
+    <div class="absolute right-[60px] bootom-100 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center p-8 z-0">
+        <i class="fas fa-user-md text-[26rem] text-blue-300/30 animate-right-slow" 
+           style="filter: drop-shadow(0 0 20px rgba(0, 0, 255, 0.1));"></i>
+    </div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 py-16 md:py-24 mb-20 flex flex-col lg:flex-row items-center lg:items-start text-left">
+        <div class="lg:w-2/3 xl:w-1/2 mb-12 lg:mb-0 animate-slide-in-left" style="animation-delay: 0.2s;">
+            <div class="flex items-center mb-4 text-blue-200">
+                <i class="fas fa-hospital-alt text-4xl mr-4"></i>
+                <p class="text-xl md:text-2xl font-heading uppercase tracking-wide">Healthcare Clinics & Partnership Organizations</p>
+            </div>
+            
+            <h1 class="font-heading text-6xl md:text-8xl font-extrabold mb-6 leading-tight tracking-tight text-white drop-shadow-lg"
+                style="text-shadow: 3px 3px 6px rgba(0,0,0,0.4);">
+                Our Expertise<br>At Your Service
+            </h1>
+
+            <p class="font-sans text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-2xl animate-fade-in"
+               style="animation-delay: 0.6s;">
+                A seamless solution for managing patient, doctor, and appointment data efficiently. 
+                Get secure access to your medical records and schedule consultations instantly.
             </p>
-            {% if not current_user.is_authenticated %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}">
-                <i class="bi bi-box-arrow-in-right"></i> Login
-            </a>
-            <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('register') }}">
-                Register as Patient
-            </a>
-            {% else %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard_redirect') }}">
-                <i class="bi bi-speedometer2"></i> Go to Your Dashboard
-            </a>
-            {% endif %}
+
+            <div class="flex flex-col sm:flex-row gap-6 animate-fade-in"
+                 style="animation-delay: 1s;">
+                
+                {% if not current_user.is_authenticated %}
+                
+                <a class="px-8 py-4 bg-teal-500 text-white font-bold text-lg uppercase tracking-wider shadow-lg hover:bg-teal-600 transition-all rounded transform hover:scale-105" 
+                   href="{{ url_for('login') }}">
+                    <i class="fas fa-sign-in-alt mr-3"></i> Secure Login
+                </a>
+                
+                <a class="px-8 py-4 border-2 border-white text-white font-bold text-lg uppercase tracking-wider shadow-lg hover:bg-white hover:text-blue-700 transition-all rounded transform hover:scale-105" 
+                   href="{{ url_for('register') }}">
+                    <i class="fas fa-user-plus mr-3"></i> Create Account
+                </a>
+                
+                {% else %}
+                
+                <a class="px-10 py-4 bg-teal-500 text-white font-bold text-xl uppercase tracking-wider shadow-xl hover:bg-teal-600 transition-all rounded-sm transform hover:scale-105" 
+                   href="{{ url_for('dashboard_redirect') }}">
+                    <i class="fas fa-user-cog mr-3"></i> Go to Your Dashboard
+                </a>
+                
+                {% endif %}
+            </div>
         </div>
     </div>
+
+    <div class="absolute bottom-0 left-0 w-full z-20 bg-blue-800 bg-opacity-90 py-6">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-around text-center text-white gap-6">
+            
+            <div class="flex-1 p-4 flex flex-col items-center animate-fade-in" style="animation-delay: 1.2s;">
+                <i class="fas fa-user-md text-4xl mb-3 text-blue-200"></i>
+                <h3 class="font-heading text-xl font-bold mb-1">Our Service Providers</h3>
+                <p class="text-sm text-blue-100">Browse doctors & specialists</p>
+                <a href="{{ url_for('register') }}" class="mt-2 text-blue-300 hover:text-white transition-colors">
+    <i class="fas fa-arrow-right"></i>
+</a>
+</div>
+
+            <div class="flex-1 p-4 flex flex-col items-center animate-fade-in" style="animation-delay: 1.4s;">
+                <i class="fas fa-calendar-alt text-4xl mb-3 text-blue-200"></i>
+                <h3 class="font-heading text-xl font-bold mb-1">Book an Appointment</h3>
+                <p class="text-sm text-blue-100">Schedule your visit online</p>
+                <a href="{{ url_for('register') }}" class="mt-2 text-blue-300 hover:text-white transition-colors">
+    <i class="fas fa-arrow-right"></i>
+</a>
+</div>
+
+            <div class="flex-1 p-4 flex flex-col items-center animate-fade-in" style="animation-delay: 1.6s;">
+                <i class="fas fa-phone-alt text-4xl mb-3 text-blue-200"></i>
+                <h3 class="font-heading text-xl font-bold mb-1 text-300">Have an Emergency?</h3>
+                <p class="text-lg font-bold text-200">1-800-900</p>
+                <a href="{{ url_for('register') }}" class="mt-2 text-blue-300 hover:text-white transition-colors">
+    <i class="fas fa-arrow-right"></i>
+</a>
+</div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

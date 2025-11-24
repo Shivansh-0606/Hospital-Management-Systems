@@ -3,77 +3,99 @@
 {% block title %}Book Appointment{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body p-4 p-md-5">
-                <h2 class="card-title text-center mb-4">Book Appointment</h2>
+<div class="px-3 px-md-5">
 
-                <div class="text-center mb-4">
-                    <h4 class="mb-1">Dr. {{ doctor.user.name }}</h4>
-                    <p class="text-muted fs-5">{{ doctor.department.name }}</p>
-                </div>
+    <!-- Page Heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4" style="position: relative;">
+        <h1 style="font-size: 42px; font-weight: 800; color: #3756d8; margin-bottom: 5px; letter-spacing: -1px;">
+            Book Appointment
+        </h1>
+    </div>
 
-                <div class="row g-4">
-                    <div class="col-md-5">
-                        <h5 class="mb-3">Doctor's Availability</h5>
-                        <div class="card bg-light">
-                            <ul class="list-group list-group-flush">
-                                {% for day, time in doctor.availability_data.items() %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
-                                    <strong>{{ day }}</strong>
-                                    <span>{{ time }}</span>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <small class="d-block text-muted mt-2">
-                            Please check the doctor's availability before selecting a date and time.
-                        </small>
+    <!-- Appointment Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm" style="background-color: rgba(245,245,245,0.85);">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <!-- Doctor Info -->
+                    <div class="text-center mb-4">
+                        <h4 class="mb-1" style="font-weight: 700; font-size: 1.8rem; color: #3756d8;">
+                            <i class="bi bi-person-badge me-2"></i> Dr. {{ doctor.user.name }}
+                        </h4>
+                        <p class="text-muted fs-5">
+                            <i class="bi bi-building me-1"></i> {{ doctor.department.name }}
+                        </p>
                     </div>
 
-                    <div class="col-md-7">
-                        <h5 class="mb-3">Select a Date and Time</h5>
-                        <form method="POST" action="{{ url_for('book_appointment', doctor_id=doctor.id) }}" novalidate>
-                            {{ form.hidden_tag() }}
-
-                            <div class="mb-3">
-                                {{ form.date.label(class="form-label") }}
-                                {% if form.date.errors %}
-                                    {{ form.date(class="form-control is-invalid", type="date") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.date.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.date(class="form-control", type="date") }}
-                                {% endif %}
+                    <div class="row g-4">
+                        <!-- Doctor Availability -->
+                        <div class="col-md-5">
+                            <h5 class="mb-3" style="font-weight: 600; color: #333;">Doctor's Availability</h5>
+                            <div class="card" style="background-color: rgba(200, 200, 200, 0.3);">
+                                <ul class="list-group list-group-flush">
+                                    {% for day, time in doctor.availability_data.items() %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: rgba(245,245,245,0.5);">
+                                        <strong>{{ day }}</strong>
+                                        <span style="color: {% if time == 'Not Available' %}red{% elif time == 'Available' %}green{% else %}orange{% endif %};">
+                                            {{ time }}
+                                        </span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
                             </div>
+                            <small class="d-block text-muted mt-2">
+                                Please check the doctor's availability before selecting a date and time.
+                            </small>
+                        </div>
 
-                            <div class="mb-3">
-                                {{ form.time.label(class="form-label") }}
-                                {% if form.time.errors %}
-                                    {{ form.time(class="form-control is-invalid", type="time") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.time.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.time(class="form-control", type="time") }}
-                                {% endif %}
-                            </div>
+                        <!-- Appointment Form -->
+                        <div class="col-md-7">
+                            <h5 class="mb-3" style="font-weight: 600; color: #333;">Select a Date and Time</h5>
+                            <form method="POST" action="{{ url_for('book_appointment', doctor_id=doctor.id) }}" novalidate>
+                                {{ form.hidden_tag() }}
 
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                                <a href="{{ url_for('patient_view_doctors') }}" class="btn btn-outline-secondary">Cancel</a>
-                                {{ form.submit(class="btn btn-primary") }}
-                            </div>
-                        </form>
+                                <div class="mb-3">
+                                    {{ form.date.label(class="form-label") }}
+                                    {% if form.date.errors %}
+                                        {{ form.date(class="form-control is-invalid", type="date") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.date.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.date(class="form-control", type="date") }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.time.label(class="form-label") }}
+                                    {% if form.time.errors %}
+                                        {{ form.time(class="form-control is-invalid", type="time") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.time.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.time(class="form-control", type="time") }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                    <a href="{{ url_for('patient_view_doctors') }}" class="btn" style="background-color: rgb(96, 128, 255); color: #000000; border: 1px solid #3756d8;">
+                                        Cancel
+                                    </a>
+                                    {{ form.submit(class="btn", style="background-color: rgb(96, 128, 255); color: #000000; border: 1px solid #3756d8;") }}
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

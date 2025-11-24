@@ -3,66 +3,135 @@
 {% block title %}Patient History{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Patient History: {{ patient.user.name }}</h1>
-    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Back to Dashboard
-    </a>
-</div>
 
-<div class="card mb-3">
+<div class="container px-4" style="max-width: 1500px;">   <!-- Added container -->
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <div>
+            <h1 style="font-size: 40px; font-weight: 800; color: #3756d8; margin: 0;">
+                Patient History
+            </h1>
+            <h4 class="mt-1" style="font-size: 20px; font-weight: 500; color: #4162bd;">
+                {{ patient.user.name }}
+            </h4>
+        </div>
+
+        <a href="{{ url_for('doctor_dashboard') }}" class="btn px-4 py-2"
+           style="background-color: #3756d8; color: white; border-radius: 8px;">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- PATIENT DETAILS -->
+    <!-- PATIENT DETAILS -->
+<div class="card mb-4 shadow-sm">
+
     <div class="card-body">
-        <h5 class="card-title">Patient Details</h5>
-        <div class="row">
+
+        <!-- TITLE -->
+        <h3 class="fw-bold mb-4"
+            style="font-size: 30px; color: #3756d8; letter-spacing: -0.5px;">
+            Patient Details
+        </h3>
+
+        <!-- DETAILS ROW -->
+        <div class="row g-3">
+
             <div class="col-md-6">
-                <p><strong>Name:</strong> {{ patient.user.name }}</p>
-                <p><strong>Email:</strong> {{ patient.user.email }}</p>
+                <div style="background: #eef2ff; padding: 12px 18px; border-radius: 10px;">
+                    <p class="m-0" style="font-size: 16px;">
+                        <strong>Name:</strong> {{ patient.user.name }}
+                    </p>
+                </div>
             </div>
+
             <div class="col-md-6">
-                <p><strong>Phone:</strong> {{ patient.contact_phone or 'N/A' }}</p>
-                <p><strong>Date of Birth:</strong> {{ patient.dob or 'N/A' }}</p>
+                <div style="background: #f1f7ff; padding: 12px 18px; border-radius: 10px;">
+                    <p class="m-0" style="font-size: 16px;">
+                        <strong>Email:</strong> {{ patient.user.email }}
+                    </p>
+                </div>
             </div>
-        </div>
+
+            <div class="col-md-6">
+                <div style="background: #fff7ea; padding: 12px 18px; border-radius: 10px;">
+                    <p class="m-0" style="font-size: 16px;">
+                        <strong>Phone:</strong> {{ patient.contact_phone or 'N/A' }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div style="background: #eafaf1; padding: 12px 18px; border-radius: 10px;">
+                    <p class="m-0" style="font-size: 16px;">
+                        <strong>Date of Birth:</strong> {{ patient.dob or 'N/A' }}
+                    </p>
+                </div>
+            </div>
+
+        </div><!-- end row -->
+
     </div>
 </div>
 
-<h3 class="h4 mt-5 mb-3">Completed Treatments</h3>
-{% if appointments %}
-<div class="accordion" id="historyAccordion">
-    {% for appt in appointments %}
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ appt.id }}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ appt.id }}" aria-expanded="false" aria-controls="collapse{{ appt.id }}">
-                <strong>{{ appt.appointment_date.strftime('%B %d, %Y') }}</strong>
-                <span class="ms-3 text-muted">with Dr. {{ appt.doctor.user.name }}</span>
-            </button>
-        </h2>
-        <div id="collapse{{ appt.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ appt.id }}" data-bs-parent="#historyAccordion">
-            <div class="accordion-body">
-                {% if appt.treatment %}
-                <div class="mb-3">
-                    <strong>Diagnosis:</strong>
-                    <p class="ms-2">{{ appt.treatment.diagnosis | nl2br }}</p>
+
+    <!-- COMPLETED TREATMENTS -->
+    <h3 class="fw-bold mb-3" style="color:#3756d8;">Completed Treatments</h3>
+
+    {% if appointments %}
+        <div class="accordion" id="historyAccordion">
+            {% for appt in appointments %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ appt.id }}">
+                        <button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse{{ appt.id }}">
+                            <strong>{{ appt.appointment_date.strftime('%B %d, %Y') }}</strong>
+                            <span class="ms-3 text-muted">
+                                with Dr. {{ appt.doctor.user.name }}
+                            </span>
+                        </button>
+                    </h2>
+
+                    <div id="collapse{{ appt.id }}" class="accordion-collapse collapse"
+                         data-bs-parent="#historyAccordion">
+                        <div class="accordion-body">
+
+                            {% if appt.treatment %}
+
+                                <div class="mb-3">
+                                    <strong>Diagnosis:</strong>
+                                    <p class="ms-2">{{ appt.treatment.diagnosis | nl2br }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>Prescription:</strong>
+                                    <p class="ms-2">{{ appt.treatment.prescription | nl2br or 'N/A' }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>Notes:</strong>
+                                    <p class="ms-2">{{ appt.treatment.notes | nl2br or 'N/A' }}</p>
+                                </div>
+
+                            {% else %}
+                                <p class="text-muted">Treatment details missing.</p>
+                            {% endif %}
+
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <strong>Prescription:</strong>
-                    <p class="ms-2">{{ appt.treatment.prescription | nl2br or 'N/A' }}</p>
-                </div>
-                <div class="mb-3">
-                    <strong>Notes:</strong>
-                    <p class="ms-2">{{ appt.treatment.notes | nl2br or 'N/A' }}</p>
-                </div>
-                {% else %}
-                <p class="text-muted">Treatment details are missing for this appointment.</p>
-                {% endif %}
-            </div>
+            {% endfor %}
         </div>
-    </div>
-    {% endfor %}
-</div>
-{% else %}
-<div class="card card-body text-center">
-    <p class="text-muted m-0">No completed treatment history found for this patient.</p>
-</div>
-{% endif %}
+
+    {% else %}
+        <div class="card card-body text-center">
+            <p class="text-muted m-0">No completed treatment history found for this patient.</p>
+        </div>
+    {% endif %}
+
+</div> <!-- END container -->
+
 {% endblock %}
+

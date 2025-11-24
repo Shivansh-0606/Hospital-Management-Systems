@@ -3,154 +3,253 @@
 {% block title %}Doctor Dashboard{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Doctor Dashboard</h1>
-    <div>
-        <a href="{{ url_for('doctor_manage_availability') }}" class="btn btn-outline-primary">
+<style>
+/* Light color for inactive nav tabs */
+.nav-tabs .nav-link {
+    background-color: #f1f4ff;    /* soft light blue */
+    border: 1px solid #d2d7f0;
+    color: #3756d8;
+    font-weight: 500;
+    border-radius: 8px 8px 0 0;
+    margin: 0 3px;
+}
+
+/* Hover effect */
+.nav-tabs .nav-link:hover {
+    background-color: #e4e8ff;
+    color: #2e47c4;
+}
+
+/* Active tab stays clean white */
+.nav-tabs .nav-link.active {
+    background-color: #ffffff !important;
+    color: #3756d8 !important;
+    border-bottom-color: transparent !important;
+    font-weight: 600;
+}
+#appointmentTabs {
+    margin-bottom: 0 !important;
+}
+
+#appointmentTabContent {
+    overflow: visible !important; /* ensures tabs are clickable */
+    margin-top: -1px; /* joins tabs + card cleanly */
+}
+</style>
+
+
+<div class="container px-4" style="max-width: 1500px;">
+
+    <!-- HEADER ROW -->
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <h1 style="font-size: 42px; font-weight: 800; color: #3756d8; margin-bottom: 5px; letter-spacing: -1px;">
+            Doctor Dashboard
+        </h1>
+
+        <!-- BUTTON ON RIGHT SIDE -->
+        <a href="{{ url_for('doctor_manage_availability') }}" class="btn btn-primary px-4 py-2">
             <i class="bi bi-calendar-range"></i> Manage Availability
         </a>
     </div>
-</div>
-<h4 class="mb-4 fw-normal">Welcome, Dr. {{ current_user.name }}</h4>
 
-<ul class="nav nav-tabs nav-fill" id="appointmentTabs" role="tablist">
+    <h4 class="mb-4 fw-normal">Welcome, Dr. {{ current_user.name }}</h4>
+
+    <!-- TABS -->
+    <ul class="nav nav-tabs nav-fill" id="appointmentTabs" role="tablist">
+
     <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today-pane" type="button" role="tab" aria-controls="today-pane" aria-selected="true">
+        <button class="nav-link active" 
+                id="today-tab"
+                data-bs-toggle="tab" 
+                data-bs-target="#today-pane" 
+                type="button"
+                role="tab"
+                aria-controls="today-pane"
+                aria-selected="true">
             Today's Appointments ({{ todays_appts|length }})
         </button>
     </li>
+
     <li class="nav-item" role="presentation">
-        <button class="nav-link" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming-pane" type="button" role="tab" aria-controls="upcoming-pane" aria-selected="false">
+        <button class="nav-link"
+                id="upcoming-tab"
+                data-bs-toggle="tab" 
+                data-bs-target="#upcoming-pane"
+                type="button"
+                role="tab"
+                aria-controls="upcoming-pane"
+                aria-selected="false">
             Upcoming Appointments ({{ upcoming_appts|length }})
         </button>
     </li>
+
     <li class="nav-item" role="presentation">
-        <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed-pane" type="button" role="tab" aria-controls="completed-pane" aria-selected="false">
+        <button class="nav-link"
+                id="completed-tab"
+                data-bs-toggle="tab" 
+                data-bs-target="#completed-pane"
+                type="button"
+                role="tab"
+                aria-controls="completed-pane"
+                aria-selected="false">
             Completed Appointments ({{ completed_appts|length }})
         </button>
     </li>
+
 </ul>
 
-<div class="tab-content card" id="appointmentTabContent" style="border-top-left-radius: 0; border-top-right-radius: 0;">
 
-    <div class="tab-pane fade show active p-4" id="today-pane" role="tabpanel" aria-labelledby="today-tab">
-        {% if todays_appts %}
-            <div class="list-group">
-            {% for appt in todays_appts %}
-                <div class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
-                        <span class="badge bg-primary rounded-pill fs-6">{{ appt.appointment_time.strftime('%I:%M %p') }}</span>
-                    </div>
-                    <p class="mb-1">Status: <span class="fw-bold text-success">{{ appt.status }}</span></p>
-                    <div class="mt-2 btn-group-sm">
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeModal{{ appt.id }}">
-                            <i class="bi bi-check-lg"></i> Complete
-                        </button>
-                        <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-clock-history"></i> View History
-                        </a>
-                        <form action="{{ url_for('cancel_appointment', appointment_id=appt.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="bi bi-x-lg"></i> Cancel
+
+    <!-- TAB CONTENT -->
+    <div class="tab-content card" id="appointmentTabContent" style="border-top-left-radius:0; border-top-right-radius:0;">
+
+        <!-- TODAY -->
+        <div class="tab-pane fade show active p-4" id="today-pane">
+            {% if todays_appts %}
+                <div class="list-group">
+                {% for appt in todays_appts %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
+                            <span class="badge bg-primary rounded-pill fs-6">{{ appt.appointment_time.strftime('%I:%M %p') }}</span>
+                        </div>
+                        <p class="mb-1">Status: <span class="fw-bold text-success">{{ appt.status }}</span></p>
+
+                        <div class="mt-2 btn-group-sm">
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeModal{{ appt.id }}">
+                                <i class="bi bi-check-lg"></i> Complete
                             </button>
-                        </form>
-                    </div>
-                </div>
 
-                <div class="modal fade" id="completeModal{{ appt.id }}" tabindex="-1" aria-labelledby="completeModalLabel{{ appt.id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ url_for('complete_appointment', appointment_id=appt.id) }}" novalidate>
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="completeModalLabel{{ appt.id }}">Complete Appointment: {{ appt.patient.user.name }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    {{ form.hidden_tag() }}
-                                    <p><strong>Patient:</strong> {{ appt.patient.user.name }}</p>
-                                    <p><strong>Time:</strong> {{ appt.appointment_date.strftime('%Y-%m-%d') }} at {{ appt.appointment_time.strftime('%I:%M %p') }}</p>
+                            <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-clock-history"></i> View History
+                            </a>
 
-                                    <div class="mb-3">
-                                        {{ form.diagnosis.label(class="form-label") }} (Required)
-                                        {{ form.diagnosis(class="form-control", rows=4) }}
-                                    </div>
-                                    <div class="mb-3">
-                                        {{ form.prescription.label(class="form-label") }}
-                                        {{ form.prescription(class="form-control", rows=4) }}
-                                    </div>
-                                    <div class="mb-3">
-                                        {{ form.notes.label(class="form-label") }}
-                                        {{ form.notes(class="form-control", rows=2) }}
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    {{ form.submit(class="btn btn-success") }}
-                                </div>
+                            <form action="{{ url_for('cancel_appointment', appointment_id=appt.id) }}" method="POST" class="d-inline" 
+                                  onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-lg"></i> Cancel
+                                </button>
                             </form>
                         </div>
                     </div>
+
+                    <!-- COMPLETE MODAL -->
+                    <div class="modal fade" id="completeModal{{ appt.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+
+                                <form method="POST" action="{{ url_for('complete_appointment', appointment_id=appt.id) }}">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Complete Appointment: {{ appt.patient.user.name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        {{ form.hidden_tag() }}
+
+                                        <p><strong>Patient:</strong> {{ appt.patient.user.name }}</p>
+                                        <p><strong>Time:</strong> 
+                                            {{ appt.appointment_date.strftime('%Y-%m-%d') }} at 
+                                            {{ appt.appointment_time.strftime('%I:%M %p') }}
+                                        </p>
+
+                                        <div class="mb-3">
+                                            {{ form.diagnosis.label(class="form-label") }} (Required)
+                                            {{ form.diagnosis(class="form-control", rows=4) }}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            {{ form.prescription.label(class="form-label") }}
+                                            {{ form.prescription(class="form-control", rows=4) }}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            {{ form.notes.label(class="form-label") }}
+                                            {{ form.notes(class="form-control", rows=2) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        {{ form.submit(class="btn btn-success") }}
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
                 </div>
-            {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center text-muted m-0">No appointments scheduled for today.</p>
-        {% endif %}
+            {% else %}
+                <p class="text-center text-muted">No appointments scheduled for today.</p>
+            {% endif %}
+        </div>
+
+        <!-- UPCOMING -->
+        <div class="tab-pane fade p-4" id="upcoming-pane">
+            {% if upcoming_appts %}
+                <div class="list-group">
+                {% for appt in upcoming_appts %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
+                            <span class="badge bg-secondary rounded-pill fs-6">
+                                {{ appt.appointment_date.strftime('%Y-%m-%d') }} at {{ appt.appointment_time.strftime('%I:%M %p') }}
+                            </span>
+                        </div>
+
+                        <div class="mt-2 btn-group-sm">
+                            <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-clock-history"></i> View History
+                            </a>
+
+                            <form action="{{ url_for('cancel_appointment', appointment_id=appt.id) }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-lg"></i> Cancel
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No upcoming appointments.</p>
+            {% endif %}
+        </div>
+
+        <!-- COMPLETED -->
+        <div class="tab-pane fade p-4" id="completed-pane">
+            {% if completed_appts %}
+                <div class="list-group">
+                {% for appt in completed_appts %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
+                            <small class="text-muted">{{ appt.appointment_date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        <p class="mb-1"><strong>Diagnosis:</strong> {{ appt.treatment.diagnosis|truncate(100) }}</p>
+
+                        <div class="mt-2 btn-group-sm">
+                            <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-clock-history"></i> View Full History
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No completed appointments found.</p>
+            {% endif %}
+        </div>
+
     </div>
 
-    <div class="tab-pane fade p-4" id="upcoming-pane" role="tabpanel" aria-labelledby="upcoming-tab">
-        {% if upcoming_appts %}
-            <div class="list-group">
-            {% for appt in upcoming_appts %}
-                <div class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
-                        <span class="badge bg-secondary rounded-pill fs-6">
-                            {{ appt.appointment_date.strftime('%Y-%m-%d') }} at {{ appt.appointment_time.strftime('%I:%M %p') }}
-                        </span>
-                    </div>
-                    <div class="mt-2 btn-group-sm">
-                        <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-clock-history"></i> View History
-                        </a>
-                        <form action="{{ url_for('cancel_appointment', appointment_id=appt.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="bi bi-x-lg"></i> Cancel
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center text-muted m-0">No upcoming appointments.</p>
-        {% endif %}
-    </div>
+</div> <!-- /container -->
 
-    <div class="tab-pane fade p-4" id="completed-pane" role="tabpanel" aria-labelledby="completed-tab">
-        {% if completed_appts %}
-            <div class="list-group">
-            {% for appt in completed_appts %}
-                <div class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <h5 class="mb-1">{{ appt.patient.user.name }}</h5>
-                        <small class="text-muted">{{ appt.appointment_date.strftime('%Y-%m-%d') }}</small>
-                    </div>
-                    <p class="mb-1"><strong>Diagnosis:</strong> {{ appt.treatment.diagnosis|truncate(100) }}</p>
-                    <div class="mt-2 btn-group-sm">
-                        <a href="{{ url_for('doctor_patient_history', patient_id=appt.patient.id) }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-clock-history"></i> View Full History
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center text-muted m-0">No completed appointments found.</p>
-        {% endif %}
-    </div>
-</div>
 {% endblock %}

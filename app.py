@@ -15,7 +15,7 @@ load_dotenv()
 
 # --- APP CONFIGURATION ---
 app = Flask(__name__) 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = 'f8e3a2c5d1b74a0e9f8d7c6b5a4f3e2d'
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'hospital.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -93,7 +93,7 @@ def register():
         login_user(new_user)
         flash('Your account has been created! You are now logged in.', 'success')
         return redirect(url_for('dashboard_redirect'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register', form=form, small_card=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -269,6 +269,27 @@ def admin_manage_patients():
                            title='Manage Patients',
                            patients=patients,
                            search_query=q)
+@app.route('/admin/assign_doctor/<int:patient_id>', methods=['POST'])
+@admin_required
+def admin_assign_doctor_to_patient(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+    doctor_id = request.form.get('doctor_id')
+
+    if not doctor_id:
+        flash("No doctor selected.", "danger")
+        return redirect(url_for('admin_manage_patients'))
+
+    doctor = Doctor.query.get(doctor_id)
+    if not doctor:
+        flash("Invalid doctor selected.", "danger")
+        return redirect(url_for('admin_manage_patients'))
+
+    # Assign the doctor
+    patient.assigned_doctor_id = doctor.id
+    db.session.commit()
+
+    flash(f"Doctor {doctor.user.name} assigned to {patient.user.name}.", "success")
+    return redirect(url_for('admin_manage_patients'))
 
 # --- DOCTOR ROUTES ---
 @app.route('/doctor/dashboard')
