@@ -145,7 +145,7 @@ python -m venv venv
 
 C. Activate Virtual Environment
 
-1. Windows (PowerShell):
+Windows (PowerShell):
    
 ```
 .\venv\Scripts\activate
