@@ -124,7 +124,7 @@ Project-main/
 
 ## Setup & Installation
 
-A. Clone the Repository
+### Clone the Repository
    
 ```
  git clone <repository-url>
@@ -136,14 +136,14 @@ cd Project-main
 
 ```
 
-B. Create Virtual Environment
+### Create Virtual Environment
 
 ```
 python -m venv venv
 
 ```
 
-C. Activate Virtual Environment
+### Activate Virtual Environment
 
 Windows (PowerShell):
    
@@ -159,13 +159,13 @@ source venv/bin/activate
 
 ```
 
-D. Install Dependencies
+### Install Dependencies
 ```
 pip install -r requirements.txt
 
 ```
 
-E. Setup Database
+### Setup Database
 
 ```
 python setup_database.py
@@ -174,7 +174,7 @@ python setup_database.py
 
 This will create the SQLite database and required tables.
 
-F. Run the Application
+### Run the Application
 
 ```
 python app.py
@@ -188,7 +188,7 @@ http://127.0.0.1:5000
 
 ```
 
-G. Running After Restarting VS Code
+### Running After Restarting VS Code
 
 Every time you restart VS Code:
 
@@ -198,7 +198,7 @@ cd "C:\Users\DELL\Desktop\Project-main new\Project-main"
 python app.py
 ```
 
-H. Environment Variables
+### Environment Variables
 
 Create a .env file in the project root:
 
