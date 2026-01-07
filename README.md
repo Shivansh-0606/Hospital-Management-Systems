@@ -22,7 +22,7 @@ The system supports authentication, role-based access control, doctor discovery,
 
 * Manage profile and availability
 
-##* Patient
+## Patient
 
 * Patient dashboard
 
